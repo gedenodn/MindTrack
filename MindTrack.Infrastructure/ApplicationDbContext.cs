@@ -1,5 +1,4 @@
-﻿using MindTrack.Infrastructure.Identity;
-using MindTrack.Domain.Entities;
+﻿using MindTrack.Domain.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 

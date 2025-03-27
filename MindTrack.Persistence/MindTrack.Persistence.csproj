@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MindTrack.Domain\MindTrack.Domain.csproj" />
+    <ProjectReference Include="..\MindTrack.Infrastructure\MindTrack.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

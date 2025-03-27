@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
 
-namespace MindTrack.Infrastructure.Identity
+namespace MindTrack.Domain.Entities
 {
     public class ApplicationUser : IdentityUser
     {
