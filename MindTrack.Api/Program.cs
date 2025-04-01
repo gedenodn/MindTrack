@@ -23,6 +23,10 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
+string directoryPath = @"C:\Users\artur\Downloads\aclImdb_v1\aclImdb";
+string[] filePaths = Directory.GetFiles(directoryPath);
+
+
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var key = jwtSettings["Key"];
 
