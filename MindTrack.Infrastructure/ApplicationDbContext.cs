@@ -12,5 +12,10 @@ namespace MindTrack.Infrastructure
 
         public DbSet<MoodEntry> MoodEntries { get; set; }
         public DbSet<Recommendation> Recommendations { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+        }
     }
 }

@@ -25,29 +25,44 @@ namespace MindTrack.Application.Services
 
         public async Task<string> RegisterAsync(string email, string name, string password)
         {
-            var existingUser = await _userRepository.GetByEmailAsync(email);
-            if (existingUser != null)
-                throw new Exception("User already exists");
+            try
+            {
+                var existingUser = await _userRepository.GetByEmailAsync(email);
+                if (existingUser != null)
+                    throw new InvalidOperationException("User already exists");
 
-            var user = new ApplicationUser { Email = email, UserName = email, Name = name };
+                var user = new ApplicationUser { Email = email, UserName = email, Name = name };
+                bool isAdded = await _userRepository.AddAsync(user, password);
 
-            if (!await _userRepository.AddAsync(user, password))
-                throw new Exception("User registration failed");
+                if (!isAdded)
+                    throw new Exception("User registration failed");
 
-            return _jwtTokenGenerator.GenerateToken(user);
+                return _jwtTokenGenerator.GenerateToken(user);
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException($"Registration error: {ex.Message}", ex);
+            }
         }
 
         public async Task<string> LoginAsync(string email, string password)
         {
-            var user = await _userRepository.GetByEmailAsync(email);
-            if (user == null)
-                throw new Exception("Invalid email or password");
+            try
+            {
+                var user = await _userRepository.GetByEmailAsync(email);
+                if (user == null)
+                    throw new UnauthorizedAccessException("Invalid email or password");
 
-            var result = await _signInManager.PasswordSignInAsync(email, password, false, false);
-            if (!result.Succeeded)
-                throw new Exception("Invalid email or password");
+                var result = await _signInManager.PasswordSignInAsync(user.UserName, password, false, false);
+                if (!result.Succeeded)
+                    throw new UnauthorizedAccessException("Invalid email or password");
 
-            return _jwtTokenGenerator.GenerateToken(user);
+                return _jwtTokenGenerator.GenerateToken(user);
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException($"Login error: {ex.Message}", ex);
+            }
         }
     }
 }

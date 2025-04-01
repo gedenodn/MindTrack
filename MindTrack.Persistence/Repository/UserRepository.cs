@@ -25,7 +25,9 @@ namespace MindTrack.Infrastructure.Persistence.Repositories
 
         public async Task<bool> AddAsync(ApplicationUser user, string password)
         {
+            
             var result = await _userManager.CreateAsync(user, password);
+            
             return result.Succeeded;
         }
     }
