@@ -11,6 +11,7 @@ using MindTrack.Application.Interfaces;
 using MindTrack.Infrastructure.Authentication;
 using MindTrack.Application.Services;
 using MindTrack.Infrastructure.Persistence.Repositories;
+using MindTrack.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,9 +24,13 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
-string directoryPath = @"C:\Users\artur\Downloads\aclImdb_v1\aclImdb";
-string[] filePaths = Directory.GetFiles(directoryPath);
+string dataDirectory = @"C:\Users\artur\Downloads\aclImdb_v1\aclImdb";
+string modelPath = Path.Combine(AppContext.BaseDirectory, "sentiment_model.zip");
 
+if (!File.Exists(modelPath))
+{
+    _ = Task.Run(async () => await SentimentModelTrainer.TrainAndSaveModelAsync(dataDirectory, modelPath));
+}
 
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var key = jwtSettings["Key"];
@@ -66,9 +71,11 @@ builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
+builder.Services.AddSingleton<ISentimentAnalysisService>(new SentimentAnalysisService(modelPath));
+
 var app = builder.Build();
 
-app.UseRouting(); 
+app.UseRouting();
 
 if (app.Environment.IsDevelopment())
 {

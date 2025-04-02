@@ -13,24 +13,22 @@ namespace MindTrack.Infrastructure.Services
     public class SentimentAnalysisService : ISentimentAnalysisService
     {
         private readonly MLContext _mlContext;
-        private ITransformer _model;
-        private PredictionEngine<SentimentData, SentimentPrediction> _predictionEngine;
+        private readonly PredictionEngine<SentimentData, SentimentPrediction> _predictionEngine;
 
         public SentimentAnalysisService(string modelPath)
         {
             _mlContext = new MLContext();
-            _model = _mlContext.Model.Load(modelPath, out var modelInputSchema);
-            _predictionEngine = _mlContext.Model.CreatePredictionEngine<SentimentData, SentimentPrediction>(_model);
+            var model = _mlContext.Model.Load(modelPath, out var _);
+            _predictionEngine = _mlContext.Model.CreatePredictionEngine<SentimentData, SentimentPrediction>(model);
         }
 
         public SentimentAnalysisResultDTO AnalyzeSentiment(string text)
         {
             var prediction = _predictionEngine.Predict(new SentimentData { Text = text });
 
-            var sentiment = prediction.Score > 0.5f ? "Positive" : "Negative"; 
             return new SentimentAnalysisResultDTO
             {
-                Sentiment = sentiment,
+                Sentiment = prediction.Sentiment ? "Positive" : "Negative",
                 Score = prediction.Score
             };
         }

@@ -9,8 +9,8 @@ namespace MindTrack.Infrastructure.ML
 {
     public class SentimentPrediction
     {
-        [ColumnName("PredictedLabel")] 
-        public bool Sentiment { get; set; }
+        [ColumnName("PredictedLabel")]
+        public bool Sentiment { get; set; }  
         public float Score { get; set; }
     }
 }

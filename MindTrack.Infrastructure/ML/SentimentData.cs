@@ -13,6 +13,6 @@ namespace MindTrack.Infrastructure.ML
         public string Text { get; set; }
 
         [LoadColumn(1)]
-        public bool Label { get; set; }
+        public bool Sentiment { get; set; }
     }
 }
