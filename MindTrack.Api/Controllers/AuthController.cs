@@ -18,16 +18,10 @@ namespace MindTrack.Api.Controllers
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterModel model)
-        {
-            var token = await _authService.RegisterAsync(model.Email, model.Name, model.Password);
-            return Ok(new { token });
-        }
+            => Ok(new { token = await _authService.RegisterAsync(model.Email, model.Name, model.Password) });
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
-        {
-            var token = await _authService.LoginAsync(model.Email, model.Password);
-            return Ok(new { token });
-        }
+            => Ok(new { token = await _authService.LoginAsync(model.Email, model.Password) });
     }
 }

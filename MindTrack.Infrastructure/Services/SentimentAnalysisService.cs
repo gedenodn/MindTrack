@@ -28,7 +28,7 @@ namespace MindTrack.Infrastructure.Services
             }
         }
 
-        public SentimentAnalysisResultDTO AnalyzeSentiment(string text)
+        public async Task<SentimentAnalysisResultDTO> AnalyzeSentiment(string text)
         {
             Log.Information($"Analyzing text: {text}");
 

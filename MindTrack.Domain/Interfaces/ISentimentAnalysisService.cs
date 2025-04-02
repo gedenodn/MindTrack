@@ -9,6 +9,6 @@ namespace MindTrack.Domain.Interfaces
 {
     public interface ISentimentAnalysisService
     {
-        SentimentAnalysisResultDTO AnalyzeSentiment(string text);
+        Task<SentimentAnalysisResultDTO> AnalyzeSentiment(string text);
     }
 }
