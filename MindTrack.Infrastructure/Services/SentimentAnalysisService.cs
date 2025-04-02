@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.ML;
+﻿using Microsoft.ML;
+using Serilog;
 using MindTrack.Domain.Entities;
 using MindTrack.Domain.Interfaces;
 using MindTrack.Infrastructure.ML;
@@ -18,19 +14,42 @@ namespace MindTrack.Infrastructure.Services
         public SentimentAnalysisService(string modelPath)
         {
             _mlContext = new MLContext();
-            var model = _mlContext.Model.Load(modelPath, out var _);
-            _predictionEngine = _mlContext.Model.CreatePredictionEngine<SentimentData, SentimentPrediction>(model);
+
+            try
+            {
+                var model = _mlContext.Model.Load(modelPath, out var _);
+                _predictionEngine = _mlContext.Model.CreatePredictionEngine<SentimentData, SentimentPrediction>(model);
+                Log.Information("Model loaded successfully");
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Failed to load model: {ex.Message}");
+                throw;
+            }
         }
 
         public SentimentAnalysisResultDTO AnalyzeSentiment(string text)
         {
-            var prediction = _predictionEngine.Predict(new SentimentData { Text = text });
+            Log.Information($"Analyzing text: {text}");
 
-            return new SentimentAnalysisResultDTO
+            try
             {
-                Sentiment = prediction.Sentiment ? "Positive" : "Negative",
-                Score = prediction.Score
-            };
+                var prediction = _predictionEngine.Predict(new SentimentData { Text = text });
+
+                var result = new SentimentAnalysisResultDTO
+                {
+                    Sentiment = prediction.Sentiment ? "Positive" : "Negative",
+                    Score = prediction.Score
+                };
+
+                Log.Information($"Sentiment Analysis Result: {result.Sentiment}, Score: {result.Score:F4}");
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Sentiment analysis failed: {ex.Message}");
+                throw;
+            }
         }
     }
 }

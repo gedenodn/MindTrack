@@ -12,6 +12,7 @@ using MindTrack.Infrastructure.Authentication;
 using MindTrack.Application.Services;
 using MindTrack.Infrastructure.Persistence.Repositories;
 using MindTrack.Infrastructure.Services;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +32,15 @@ if (!File.Exists(modelPath))
 {
     _ = Task.Run(async () => await SentimentModelTrainer.TrainAndSaveModelAsync(dataDirectory, modelPath));
 }
+
+var logDirectory = Path.Combine(AppContext.BaseDirectory, "logs", DateTime.UtcNow.ToString("yyyy-MM-dd"));
+Directory.CreateDirectory(logDirectory);
+
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console() 
+    .WriteTo.File(Path.Combine(logDirectory, "log.txt"), rollingInterval: RollingInterval.Day)
+    .MinimumLevel.Debug() 
+    .CreateLogger();
 
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var key = jwtSettings["Key"];
